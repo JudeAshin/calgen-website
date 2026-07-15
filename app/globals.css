@@ -1,27 +1,193 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --radius-lg: var(--radius);
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background: 0 0% 100%;
+    --foreground: 160 30% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 160 30% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 30% 10%;
+
+    --primary: 152 100% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 160 20% 96%;
+    --secondary-foreground: 160 40% 15%;
+
+    --muted: 160 15% 96%;
+    --muted-foreground: 160 10% 40%;
+
+    --accent: 152 100% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 160 15% 90%;
+    --input: 160 15% 90%;
+    --ring: 152 100% 40%;
+
+    --radius: 1rem;
+
+    --chart-1: 152 100% 40%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(
+        to right,
+        rgba(37, 211, 102, 0.06) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(37, 211, 102, 0.06) 1px,
+        transparent 1px
+      );
+    background-size: 40px 40px;
+  }
+
+  .gradient-mesh {
+    background:
+      radial-gradient(
+        at 20% 20%,
+        rgba(37, 211, 102, 0.35) 0px,
+        transparent 50%
+      ),
+      radial-gradient(
+        at 80% 0%,
+        rgba(0, 184, 148, 0.3) 0px,
+        transparent 50%
+      ),
+      radial-gradient(
+        at 75% 80%,
+        rgba(37, 211, 102, 0.25) 0px,
+        transparent 50%
+      ),
+      radial-gradient(
+        at 10% 90%,
+        rgba(0, 120, 100, 0.4) 0px,
+        transparent 50%
+      );
+  }
+
+  .gradient-hero {
+    background:
+      radial-gradient(
+        ellipse 80% 60% at 50% -10%,
+        rgba(37, 211, 102, 0.25),
+        transparent 70%
+      ),
+      linear-gradient(180deg, #04231a 0%, #062b20 40%, #0a3d2c 100%);
+  }
+
+  .gradient-host {
+    background:
+      radial-gradient(
+        ellipse 80% 60% at 50% 0%,
+        rgba(37, 211, 102, 0.2),
+        transparent 70%
+      ),
+      linear-gradient(180deg, #04231a 0%, #062b20 100%);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: pulse-ring 2s ease-out infinite;
 }

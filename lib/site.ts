@@ -7,7 +7,7 @@ export const SITE = {
     playStoreLink: '[PLAY STORE LINK]',
     company: 'Calgen Technologies',
     contactEmail: 'info@caligen.tech',
-    supportEmail: 'support@caligen.tech',
+    supportEmail: 'info@caligen.tech',
   };
   
   export const NAV_LINKS = [

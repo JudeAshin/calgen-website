@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FaInstagram, FaLinkedin, FaXTwitter } from "react-icons/fa6";
+import { FaInstagram, FaFacebookF, FaXTwitter } from "react-icons/fa6";
 import { Logo } from './logo';
 import { NAV_LINKS, SITE } from '@/lib/site';
 
@@ -15,14 +15,14 @@ export default function Footer() {
               minute with coins.
             </p>
             <div className="mt-5 flex items-center gap-3">
-              <SocialLink href="https://instagram.com" label="Instagram">
+              <SocialLink href="https://www.instagram.com/get.calgen?igsh=NnNlMWtlM3A5OTA%3D&utm_source=qr" label="Instagram">
                 <FaInstagram className="h-5 w-5" />
               </SocialLink>
-              <SocialLink href="https://twitter.com" label="Twitter">
+              <SocialLink href="https://x.com/calgen_official?s=11" label="Twitter">
                 <FaXTwitter className="h-5 w-5" />
               </SocialLink>
-              <SocialLink href="https://linkedin.com" label="LinkedIn">
-                <FaLinkedin className="h-5 w-5" />
+              <SocialLink href="https://www.facebook.com/share/1D1uSmjD3u/?mibextid=wwXIfr" label="LinkedIn">
+                <FaFacebookF className="h-5 w-5" />
                 </SocialLink>
             </div>
           </div>
@@ -76,6 +76,14 @@ export default function Footer() {
                   {SITE.contactEmail}
                 </a>
               </li>
+              <li>
+      <a
+        href={`tel:${SITE.phone}`}
+        className="text-sm text-muted-foreground transition-colors hover:text-primary"
+      >
+        {SITE.phone}
+      </a>
+    </li>
             </ul>
           </div>
         </div>

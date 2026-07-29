@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/accordion';
 
 const CALLER_STEPS = [
-  { icon: UserPlus, title: 'Create an account', description: 'Sign up with your phone number in under a minute. No email required.' },
+  { icon: UserPlus, title: 'Get started instantly', description: 'Verify your email to log in and start using Calgen. No separate signup required.' }  ,
   { icon: Search, title: 'Browse online hosts', description: 'See verified hosts available right now, filtered by language, rate, and rating.' },
   { icon: Coins, title: 'Buy a coin pack', description: 'Pick a coin pack that fits your budget. Coins land in your wallet instantly.' },
   { icon: PhoneCall, title: 'Tap Call Now', description: 'Hit the call button on any online host to start a live voice call instantly.' },
@@ -36,8 +36,8 @@ const CALLER_STEPS = [
 ];
 
 const HOST_STEPS = [
-  { icon: Send, title: 'Apply as a host', description: 'Fill out the host application form with your details and languages.' },
-  { icon: CheckCircle2, title: 'Complete profile', description: 'Add a profile photo, bio, and set your per-minute rate.' },
+  { icon: Send, title: 'Register as a host', description: 'After email verification, you can apply as a host from your account or start the host registration process directly.' },
+  { icon: CheckCircle2, title: 'Complete profile',   description: 'Add your photo, bio, and languages to get started. Your initial rate is set at 1.5 gems per minute, and you can increase it later based on your performance and ratings.'},
   { icon: Power, title: 'Go online', description: 'Toggle yourself online whenever you\u2019re ready to take calls.' },
   { icon: Radio, title: 'Receive calls', description: 'Callers see you online and tap to connect. Accept and start talking.' },
   { icon: Wallet, title: 'Earn coins', description: 'You earn 50% of every coin spent on your calls, tracked in real time.' },
@@ -46,16 +46,16 @@ const HOST_STEPS = [
 
 const FAQS = [
   {
-    q: 'What are coins?',
-    a: 'Coins are Calgen\u2019s in-app currency. You buy coin packs with real money and spend them per minute on voice calls with hosts. 1 coin equals 1 minute with most hosts.',
+    q: 'What are coins and gems?',
+    a: 'Coins are Caligen’s in-app currency for callers. You can buy coin packs with real money and spend coins per minute on voice calls with hosts. Gems are the earning currency for hosts, which they receive from completed calls and can convert into real money.',
   },
   {
     q: 'How much does a call cost?',
-    a: 'The cost depends on the host\u2019s per-minute rate. Most hosts charge 1 coin per minute, but some set higher rates. You always see the rate before you call, and you only pay for the minutes you actually talk.',
+    a: 'The cost depends on the host\u2019s per-minute rate. Most hosts charge 3 coin per minute, but some set higher rates. You always see the rate before you call, and you only pay for the minutes you actually talk.',
   },
   {
     q: 'How do hosts earn?',
-    a: 'Hosts earn 50% of every coin spent on their calls. Earnings are tracked in real time and can be withdrawn to a bank account at any time, with no minimum waiting period.',
+    a: 'Hosts earn 1.5 gems per minute for every completed call. Callers pay 3 coins per minute, and host earnings are tracked in real time. Hosts can convert their gems into real money and withdraw their earnings.',
   },
   {
     q: 'Is it safe?',
@@ -71,7 +71,7 @@ const FAQS = [
   },
   {
     q: 'How do I become a host?',
-    a: 'Visit the Become a Host page, fill out the application form, and complete your profile. Once your identity is verified, you can go online and start receiving calls within 24 hours.',
+    a: 'You can become a host by filling out the application form on the Become a Host page, or by installing the Caligen app and completing the host onboarding process. Once your profile and verification are complete, you can go online and start receiving calls.',
   },
   {
     q: 'What happens when my coins run out?',
@@ -85,20 +85,19 @@ export default function HowItWorksContent() {
       <PageHero
         eyebrow="How it works"
         title="How Calgen works"
-        description="Whether you want to talk or earn, getting started is simple. Here\u2019s the full flow for both callers and hosts."
-      />
+        description="Whether you want to talk or earn, getting started is simple. Here’s the full flow for both callers and hosts."      />
 
       <FlowSection
         eyebrow="For Callers"
         title="Start a conversation in 6 steps"
-        description="From sign-up to your first call, here\u2019s everything you do as a caller."
+        description="From sign-up to your first call, here's everything you do as a caller."
         steps={CALLER_STEPS}
       />
 
       <FlowSection
         eyebrow="For Hosts"
         title="Start earning in 6 steps"
-        description="Turn your time into income. Here\u2019s the path from application to your first payout."
+        description="Turn your time into income. Here's the path from application to your first payout."
         steps={HOST_STEPS}
         alternate
       />

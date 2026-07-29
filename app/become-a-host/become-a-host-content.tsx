@@ -36,7 +36,7 @@ import { LANGUAGES } from '@/lib/site';
 const BENEFITS = [
   { icon: Clock, title: 'Set your own hours', description: 'Go online and offline whenever you want. You\u2019re in full control of your schedule.' },
   { icon: IndianRupee, title: 'Earn \u20B9100\u2013\u20B9300 per hour', description: 'A realistic earning range based on your rate and time online. The more you talk, the more you earn.' },
-  { icon: Zap, title: 'Instant payouts', description: 'Withdraw your earnings to your bank account anytime. No minimum balance, no waiting.' },
+  { icon: Zap, title: 'Instant payouts', description: 'Withdraw your earnings to your bank account anytime. No waiting.' },
   { icon: BadgeCheck, title: 'Verified community', description: 'Join a trusted network of identity-verified hosts and callers.' },
   { icon: Sparkles, title: 'No experience needed', description: 'If you enjoy conversation, you\u2019re qualified. We provide onboarding tips to help you succeed.' },
   { icon: MapPin, title: 'Work from anywhere', description: 'All you need is a phone and a stable internet connection. Earn from home or on the go.' },
@@ -191,9 +191,6 @@ function ApplicationForm() {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <FormField label="Phone number" icon={Phone} id="phone">
-                  <Input id="phone" name="phone" type="tel" placeholder="+91 98765 43210" required />
-                </FormField>
                 <FormField label="Gender" id="gender">
                   <Select name="gender" required>
                     <SelectTrigger id="gender">

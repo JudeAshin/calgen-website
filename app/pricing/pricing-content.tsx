@@ -12,32 +12,40 @@ const PACKS = [
     name: 'Starter',
     price: 49,
     coins: 50,
-    minutes: '~10 minutes',
-    features: ['50 coins', 'Valid for 6 months', 'All payment methods'],
+    minutes: '~16 minutes',
+    features: ['50 coins', 'One-time purchase', 'All payment methods'],
     popular: false,
   },
   {
     name: 'Popular',
     price: 99,
     coins: 110,
-    minutes: '~22 minutes',
-    features: ['110 coins', '10 bonus coins', 'Valid for 12 months', 'Priority support'],
-    popular: true,
+    minutes: '~36 minutes',
+    features: ['110 coins', 'One-time purchase', 'All payment methods'],
+    popular: false,
   },
   {
     name: 'Value',
     price: 199,
     coins: 250,
-    minutes: '~50 minutes',
-    features: ['250 coins', '50 bonus coins', 'Valid for 12 months', 'Priority support'],
+    minutes: '~83 minutes',
+    features: ['250 coins', 'One-time purchase', 'All payment methods'],
     popular: false,
   },
   {
     name: 'Premium',
     price: 499,
     coins: 700,
-    minutes: '~140 minutes',
-    features: ['700 coins', '200 bonus coins', 'Valid for 12 months', 'Priority support', 'Early feature access'],
+    minutes: '~233 minutes',
+    features: ['700 coins', 'One-time purchase', 'All payment methods'],
+    popular: true,
+  },
+  {
+    name: 'Ultimate',
+    price: 999,
+    coins: 1600,
+    minutes: '~533 minutes',
+    features: ['1600 coins', 'Best value pack', 'All payment methods'],
     popular: false,
   },
 ];
@@ -74,7 +82,7 @@ export default function PricingContent() {
                   )}
                   <h3 className="text-lg font-semibold">{pack.name}</h3>
                   <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-4xl font-bold">\u20B9{pack.price}</span>
+                    <span className="text-4xl font-bold">₹{pack.price}</span>
                   </div>
                   <div className="mt-3 flex items-center gap-2 rounded-xl bg-primary/10 px-3 py-2">
                     <Coins className="h-5 w-5 text-primary" />
@@ -106,7 +114,7 @@ export default function PricingContent() {
 
           <Reveal className="mx-auto mt-10 max-w-2xl rounded-2xl bg-secondary/50 p-5 text-center">
             <p className="text-sm leading-relaxed text-muted-foreground">
-              <span className="font-semibold text-foreground">1 coin = 1 minute</span> with most
+              <span className="font-semibold text-foreground">3 coin = 1 minute</span> with most
               hosts. Some hosts charge more based on their rate. You always see the exact rate
               before you call.
             </p>

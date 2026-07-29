@@ -15,7 +15,7 @@ const SECTIONS = [
     title: 'Information We Collect',
     body: [
       'We collect information you provide directly to us when you create an account, use our services, or contact us. This includes:',
-      ['1.1 Account information: Your name, phone number, and email address.', '1.2 Profile information: Your display name, bio, profile photo, and languages spoken (for hosts).', '1.3 Payment information: Payment method details processed securely through our payment partner. We do not store full card numbers on our servers.', '1.4 Usage data: Information about how you use the app, including call duration, coins spent, and device information.'],
+      ['1.1 Account information: Your name and email address.', '1.2 Profile information: Your display name, bio, profile photo, and languages spoken (for hosts).', '1.3 Payment information: Payment method details processed securely through our payment partner. We do not store full card numbers on our servers.', '1.4 Usage data: Information about how you use the app, including call duration, coins spent, and device information.'],
     ],
   },
   {

@@ -1,2 +1,1 @@
-/test-redirect /refer/index.html 200
-/refer/* /refer/index.html 200
+/refer/* /referral-page/index.html 200

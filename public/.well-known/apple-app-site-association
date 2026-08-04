@@ -1,0 +1,22 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "J4RFD3U5JF.com.calgen.app",
+        "paths": [
+          "/refer/*",
+          "/referral"
+        ],
+        "components": [
+          {
+            "/": "/refer/*"
+          },
+          {
+            "/": "/referral"
+          }
+        ]
+      }
+    ]
+  }
+}

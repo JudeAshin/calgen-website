@@ -100,17 +100,36 @@
         }
     </style>
     <script>
+        function getReferralCode() {
+    // Path is like /refer/CALGEN-ML9J
+    var pathParts = window.location.pathname.split('/').filter(Boolean);
+    var code = pathParts[pathParts.length - 1]; // last segment
+
+    // Fallback: also check ?ref= or ?code= query param, in case you link that way too
+    if (!code || code.toLowerCase() === 'refer') {
+        var params = new URLSearchParams(window.location.search);
+        code = params.get('ref') || params.get('code') || '';
+    }
+    return code;
+}
         function getMobileStoreUrl() {
             var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            
+            var referralCode = getReferralCode();
+
             // Play Store App details URL
-            var androidUrl = "https://play.google.com/store/apps/details?id=com.calgen.app&referrer=utm_content%3D<REFERRAL_CODE>";
+            var referrerParam = encodeURIComponent("utm_content=" + referralCode);
+            var androidUrl = "https://play.google.com/store/apps/details?id=com.calgen.app&referrer=" + referrerParam;
             
             // App Store URL (Replace with your actual iOS App Store link)
-            var iosUrl = "https://apps.apple.com/app/idYOUR_APPLE_APP_ID"; 
+            var iosUrl = "https://apps.apple.com/app/idYOUR_APPLE_APP_ID?referral=" + encodeURIComponent(referralCode);
             
             // Fallback landing page (Desktop users)
             var fallbackUrl = "https://caligen.tech";
+
+            if (!referralCode) {
+        // No code found — don't silently send broken referrer data
+        console.warn("No referral code found in URL");
+    }
 
             if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
                 return iosUrl;

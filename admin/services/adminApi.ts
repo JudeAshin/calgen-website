@@ -1,6 +1,6 @@
 import { adminAuthService } from '@/admin/services/auth-service';
 
-const ADMIN_API_URL = 'http://localhost:3001/admin';
+const ADMIN_API_URL = 'https://api.caligen.tech/admin';
 
 export interface AdminApiOptions {
   auth?: boolean;

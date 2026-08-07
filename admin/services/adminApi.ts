@@ -1,6 +1,6 @@
 import { adminAuthService } from '@/admin/services/auth-service';
 
-const ADMIN_API_URL = 'https://api.caligen.tech/admin';
+const ADMIN_API_URL = 'http://localhost:3001/admin';
 
 export interface AdminApiOptions {
   auth?: boolean;
@@ -27,8 +27,9 @@ export async function adminApi<T = unknown>(
 ): Promise<T> {
   const { auth = true, headers = {}, body } = options;
 
+  const isFormData = body instanceof FormData;
   const requestHeaders: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...headers,
   };
 
@@ -46,7 +47,7 @@ export async function adminApi<T = unknown>(
     res = await fetch(url, {
       method,
       headers: requestHeaders,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body !== undefined ? (isFormData ? body : JSON.stringify(body)) : undefined,
     });
   } catch {
     throw { message: 'Network error. Please check your connection.', status: 0 } as AdminApiError;

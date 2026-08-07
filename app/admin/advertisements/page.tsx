@@ -1,14 +1,7 @@
 'use client';
 
-import { Megaphone } from 'lucide-react';
-import { ModulePlaceholder } from '@/admin/components/module-placeholder';
+import { AdvertisementsContent } from '@/admin/components/ads/advertisements-content';
 
-export default function AdvertisationsPage() {
-  return (
-    <ModulePlaceholder
-      title="Advertisements"
-      description="Manage caller and host advertisements"
-      icon={Megaphone}
-    />
-  );
+export default function AdvertisementsPage() {
+  return <AdvertisementsContent />;
 }

@@ -1,9 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import Navbar from '@/components/site/navbar';
-import Footer from '@/components/site/footer';
-import FloatingDownloadButton from '@/components/site/floating-download-button';
+import { PublicChrome } from './public-chrome';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 
@@ -38,10 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={inter.variable}>
       <body className="min-h-screen bg-background font-sans text-foreground">
-        <Navbar />
-        <main className="pt-16">{children}</main>
-        <Footer />
-        <FloatingDownloadButton />
+        <PublicChrome>{children}</PublicChrome>
       </body>
     </html>
   );

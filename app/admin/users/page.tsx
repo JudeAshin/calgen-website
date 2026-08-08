@@ -1,14 +1,19 @@
 'use client';
 
-import { Users } from 'lucide-react';
-import { ModulePlaceholder } from '@/admin/components/module-placeholder';
+import { Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
+import { UsersContent } from '@/admin/components/users/users-content';
 
 export default function UsersPage() {
   return (
-    <ModulePlaceholder
-      title="Users"
-      description="Manage caller and host users, status, and activity"
-      icon={Users}
-    />
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+        </div>
+      }
+    >
+      <UsersContent />
+    </Suspense>
   );
 }

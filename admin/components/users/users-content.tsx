@@ -190,7 +190,7 @@ export function UsersContent() {
       limit: pagination.limit,
     };
     if (type !== 'all') params.type = type;
-    if (period !== 'all' && period !== 'custom') params.period = period;
+    if (period !== 'all') params.period = period;
     if (period === 'custom') {
       if (fromDate) params.from_date = fromDate;
       if (toDate) params.to_date = toDate;
@@ -204,7 +204,7 @@ export function UsersContent() {
   // Update URL
   const updateUrl = useCallback((params: UserQueryParams) => {
     const url = new URLSearchParams();
-  
+    
     if (params.type) {
       url.set('type', params.type);
     }
@@ -239,10 +239,10 @@ export function UsersContent() {
   
     if (params.limit && params.limit !== 20) {
       url.set('limit', String(params.limit));
-    }
+}
   
     const qs = url.toString();
-  
+    
     router.replace(
       qs ? `/admin/users?${qs}` : '/admin/users',
       { scroll: false },
@@ -358,7 +358,7 @@ export function UsersContent() {
         u.xp,
         u.level,
         u.rating ?? '',
-                formatDate(u.created_at),
+        formatDate(u.created_at),
       ]);
       downloadCsv('callers.csv', headers, rows);
     } else if (type === 'host' || (type === 'all' && users.every((u) => u.user_type === 'host'))) {
@@ -846,9 +846,9 @@ function RatingDisplay({ rating }: { rating?: number | string | null }) {
   return (
     <div className="flex items-center gap-1">
       <span className="text-sm font-semibold text-slate-700">
-        {numericRating.toFixed(1)}
-      </span>
-    </div>
+      {numericRating.toFixed(1)}
+    </span>
+</div>
   );
 }
 

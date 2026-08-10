@@ -1,14 +1,7 @@
 'use client';
 
-import { Image } from 'lucide-react';
-import { ModulePlaceholder } from '@/admin/components/module-placeholder';
+import { LogosContent } from '@/admin/components/logos/logos-content';
 
 export default function LogosPage() {
-  return (
-    <ModulePlaceholder
-      title="Logos"
-      description="Manage application logos and active selection"
-      icon={Image}
-    />
-  );
+  return <LogosContent />;
 }

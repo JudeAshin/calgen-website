@@ -7,7 +7,7 @@ import type {
   UpdateSchedulePayload,
 } from '@/admin/types/logos';
 
-const LOGO_API_URL = 'http://localhost:3001/festival-logo';
+const LOGO_API_URL = 'https://api.caligen.tech/festival-logo';
 
 async function logoApi<T = unknown>(
   path: string,

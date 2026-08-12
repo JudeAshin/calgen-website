@@ -25,7 +25,7 @@ const NAV_ITEMS = [
   { label: 'Logos', href: '/admin/logos', icon: Image },
   { label: 'Reports', href: '/admin/reports', icon: Flag },
   { label: 'Coins', href: '/admin/coins', icon: Coins },
-  { label: 'Host KYC', href: '/admin/host-kyc', icon: BadgeCheck },
+  { label: 'Host KYC', href: '/admin/kyc', icon: BadgeCheck },
   { label: 'Withdrawals', href: '/admin/withdrawals', icon: Wallet },
   { label: 'Coins Purchased', href: '/admin/coins-purchased', icon: ShoppingBag },
   { label: 'Users', href: '/admin/users', icon: Users },

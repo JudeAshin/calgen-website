@@ -1,9 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { ArrowLeft, BadgeCheck, Banknote, Check, CheckCircle2, ClipboardCheck, FileCheck2, Mail, Phone, ShieldAlert, UserRound, X } from 'lucide-react';
+import { X, BadgeCheck, Banknote, Check, CheckCircle2, ClipboardCheck, FileCheck2, Mail, Phone, ShieldAlert, UserRound } from 'lucide-react';
 import { useAdminAuth } from '@/admin/hooks/use-auth';
 import { kycService } from '@/admin/services/kyc-service';
 import type { KycBank, KycHost, KycRecord } from '@/admin/types/kyc';
@@ -27,10 +25,13 @@ function formatDateTime(value?: string | null): string {
 }
 function initials(name?: string): string { return (name ?? '?').split(' ').map((part) => part[0]).slice(0, 2).join('').toUpperCase(); }
 
-export function KycDetailContent() {
+interface KycDetailContentProps {
+  id: string;
+  onClose: () => void;
+}
+
+export function KycDetailContent({ id, onClose }: KycDetailContentProps) {
   const { isAuthenticated, isLoading: authLoading } = useAdminAuth();
-  const params = useParams<{ id: string }>();
-  const id = params.id;
   const [kyc, setKyc] = useState<KycRecord | null>(null);
   const [host, setHost] = useState<KycHost | null>(null);
   const [bank, setBank] = useState<KycBank | null>(null);
@@ -59,21 +60,58 @@ export function KycDetailContent() {
   const identityStatus = kyc?.status;
   const bankStatus = bank?.verification_status;
   const bankChanged = Boolean(kyc?.bank_details_changed) && bankStatus === 'pending_review';
-  const identityActionsVisible = identityStatus === 'pending_review' || identityStatus === 'rejected';
-  const bankActionsVisible = bankStatus === 'pending_review' || bankStatus === 'rejected';
   const toggleCheck = (key: string) => setChecks((current) => ({ ...current, [key]: !current[key] }));
 
-  if (authLoading || loading) return <DetailSkeleton />;
-  if (error || !kyc || !host) return <div className="space-y-4"><Link href="/admin/kyc" className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900"><ArrowLeft className="h-4 w-4" />Back to KYC</Link><div className="rounded-xl bg-red-50 p-5 text-sm text-red-700">{error ?? 'KYC submission not found.'}<button onClick={load} className="ml-2 font-medium underline">Retry</button></div></div>;
+  if (authLoading || loading) return <DetailSkeleton onClose={onClose} />;
+  if (error || !kyc || !host) {
+    return (
+      <div className="space-y-4">
+        <button onClick={onClose} className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900">
+          <X className="h-4 w-4" />
+          Close
+        </button>
+        <div className="rounded-xl bg-red-50 p-5 text-sm text-red-700">
+          {error ?? 'KYC submission not found.'}
+          <button onClick={load} className="ml-2 font-medium underline">Retry</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5 pb-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><Link href="/admin/kyc" className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900"><ArrowLeft className="h-4 w-4" />Back to KYC submissions</Link><p className="font-mono text-xs text-slate-400">KYC ID: {kyc.id}</p></div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <button onClick={onClose} className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900">
+          <X className="h-4 w-4" />
+          Close
+        </button>
+        <p className="font-mono text-xs text-slate-400">KYC ID: {kyc.id}</p>
+      </div>
 
       <HostInfoCard host={host} kyc={kyc} />
-      {bankChanged && <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800"><ShieldAlert className="mt-0.5 h-5 w-5 flex-shrink-0" /><div><p className="text-sm font-semibold">Bank Details Changed – Re-verification Required</p><p className="mt-1 text-xs text-amber-700">The host updated their bank details after identity verification. Review the new bank information without requesting identity documents again.</p></div></div>}
+      {bankChanged && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
+          <ShieldAlert className="mt-0.5 h-5 w-5 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-semibold">Bank Details Changed – Re-verification Required</p>
+            <p className="mt-1 text-xs text-amber-700">The host updated their bank details after identity verification. Review the new bank information without requesting identity documents again.</p>
+          </div>
+        </div>
+      )}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><div className="mb-4 flex items-center gap-2"><ClipboardCheck className="h-5 w-5 text-slate-500" /><div><h2 className="text-base font-semibold text-slate-900">Verification Progress</h2><p className="text-xs text-slate-500">Identity and bank verification are independent.</p></div></div><div className="grid gap-3 sm:grid-cols-2"><ProgressItem label="Identity Documents" status={identityStatus} /><ProgressItem label="Bank Account" status={bankStatus} /></div></section>
+      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-center gap-2">
+          <ClipboardCheck className="h-5 w-5 text-slate-500" />
+          <div>
+            <h2 className="text-base font-semibold text-slate-900">Verification Progress</h2>
+            <p className="text-xs text-slate-500">Identity and bank verification are independent.</p>
+          </div>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <ProgressItem label="Identity Documents" status={identityStatus} />
+          <ProgressItem label="Bank Account" status={bankStatus} />
+        </div>
+      </section>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-5">
@@ -81,7 +119,9 @@ export function KycDetailContent() {
           <BankSection bank={bank} />
           <Checklist checks={checks} onToggle={toggleCheck} />
         </div>
-        <aside className="h-fit xl:sticky xl:top-5"><ActionPanel kyc={kyc} bank={bank} onAction={setAction} /></aside>
+        <aside className="h-fit xl:sticky xl:top-5">
+          <ActionPanel kyc={kyc} bank={bank} onAction={setAction} />
+        </aside>
       </div>
 
       <KycActionDialog id={kyc.id} action={action} onClose={() => setAction(null)} onSuccess={load} />
@@ -121,6 +161,18 @@ function ActionPanel({ kyc, bank, onAction }: { kyc: KycRecord; bank: KycBank | 
   return <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><h2 className="text-base font-semibold text-slate-900">Verification Actions</h2><p className="mt-1 text-xs text-slate-500">Only the selected verification area will be changed.</p><div className="mt-4 space-y-4"><div className="rounded-lg border border-slate-100 p-3"><div className="mb-3 flex items-center justify-between"><span className="text-sm font-semibold text-slate-700">Bank Account</span><KycStatusBadge status={bank?.verification_status} /></div>{canReviewBank ? <div className="grid gap-2"><button onClick={() => onAction('verify-bank')} className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Verify Bank Account</button><button onClick={() => onAction('reject-bank')} className="rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50">Reject Bank Account</button></div> : <p className="text-xs text-slate-500">No bank action is required.</p>}</div><div className="rounded-lg border border-slate-100 p-3"><div className="mb-3 flex items-center justify-between"><span className="text-sm font-semibold text-slate-700">Identity Documents</span><KycStatusBadge status={kyc.status} /></div>{canReviewKyc ? <div className="grid gap-2"><button onClick={() => onAction('verify-kyc')} className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Verify KYC</button><button onClick={() => onAction('reject-kyc')} className="rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50">Reject KYC</button></div> : <p className="text-xs text-slate-500">Identity documents are already verified.</p>}</div></div></div>;
 }
 
-function DetailSkeleton() {
-  return <div className="space-y-5"><div className="h-5 w-40 animate-pulse rounded bg-slate-200" /><div className="h-36 animate-pulse rounded-xl bg-white" /><div className="grid gap-5 lg:grid-cols-2"><div className="h-64 animate-pulse rounded-xl bg-white" /><div className="h-64 animate-pulse rounded-xl bg-white" /></div></div>;
+function DetailSkeleton({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="space-y-5">
+      <button onClick={onClose} className="inline-flex items-center gap-2 text-sm font-medium text-slate-600">
+        <X className="h-4 w-4" />
+        Close
+      </button>
+      <div className="h-36 animate-pulse rounded-xl bg-white" />
+      <div className="grid gap-5 lg:grid-cols-2">
+        <div className="h-64 animate-pulse rounded-xl bg-white" />
+        <div className="h-64 animate-pulse rounded-xl bg-white" />
+      </div>
+    </div>
+  );
 }

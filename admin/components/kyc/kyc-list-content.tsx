@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { BadgeCheck, CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Search, Users, X, XCircle } from 'lucide-react';
 import { useAdminAuth } from '@/admin/hooks/use-auth';
@@ -9,6 +8,7 @@ import { kycService } from '@/admin/services/kyc-service';
 import type { KycListItem, KycListParams, KycPagination, KycSummary } from '@/admin/types/kyc';
 import { getDocumentTypeLabel } from '@/admin/types/kyc';
 import { KycStatusBadge } from '@/admin/components/kyc/kyc-badges';
+import { KycDetailModal } from '@/admin/components/kyc/kyc-detail-modal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -53,6 +53,7 @@ export function KycListContent() {
   const [toDate, setToDate] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     setStatus(searchParams.get('status') ?? '');
@@ -60,6 +61,7 @@ export function KycListContent() {
     setSearch(searchParams.get('search') ?? '');
     setFromDate(searchParams.get('from_date') ?? '');
     setToDate(searchParams.get('to_date') ?? '');
+    setSelectedId(searchParams.get('kyc_id'));
     const page = Number(searchParams.get('page') ?? '1');
     const limit = Number(searchParams.get('limit') ?? '20');
     setPagination((previous) => ({ ...previous, page: Number.isFinite(page) && page > 0 ? page : 1, limit: PAGE_SIZES.includes(limit) ? limit : 20 }));
@@ -78,6 +80,9 @@ export function KycListContent() {
   const updateUrl = useCallback((next: KycListParams) => {
     const query = new URLSearchParams();
     Object.entries(next).forEach(([key, value]) => { if (value !== undefined && value !== '') query.set(key, String(value)); });
+    // preserve the open modal (kyc_id) across filter/pagination updates
+    const currentKycId = searchParams.get('kyc_id');
+    if (currentKycId) query.set('kyc_id', currentKycId);
     const nextQuery = query.toString();
     if (searchParams.toString() !== nextQuery) {
       router.replace(`${pathname}${nextQuery ? `?${nextQuery}` : ''}`, { scroll: false });
@@ -111,12 +116,25 @@ export function KycListContent() {
     setPagination((previous) => ({ ...previous, page: 1 }));
   };
   const changeFilter = (setter: (value: string) => void, value: string) => { setter(value === 'all' ? '' : value); setPagination((previous) => ({ ...previous, page: 1 })); };
+
+  const openDetail = (id: string) => {
+    const query = new URLSearchParams(searchParams.toString());
+    query.set('kyc_id', id);
+    router.push(`${pathname}?${query.toString()}`, { scroll: false });
+  };
+
+  const closeDetail = () => {
+    const query = new URLSearchParams(searchParams.toString());
+    query.delete('kyc_id');
+    const qs = query.toString();
+    router.push(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false });
+  };
+
   const totalPages = pagination.totalPages ?? pagination.total_pages ?? 0;
   const activeFilters = Boolean(status || bankStatus || search || fromDate || toDate);
   const pending = summary.pending_review ?? items.filter((item) => item.status === 'pending_review').length;
   const verified = summary.verified ?? items.filter((item) => item.status === 'verified').length;
   const rejected = summary.rejected ?? items.filter((item) => item.status === 'rejected').length;
-  const bankPending = summary.bank_pending_review ?? items.filter((item) => item.bank?.verification_status === 'pending_review').length;
 
   if (authLoading) return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-emerald-600" /></div>;
 
@@ -145,21 +163,22 @@ export function KycListContent() {
 
       {error && !loading && <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700">{error} <button onClick={load} className="ml-2 font-medium underline">Retry</button></div>}
       {loading ? <KycTableSkeleton /> : error ? null : items.length === 0 ? <EmptyState activeFilters={activeFilters} onClear={clearFilters} /> : <>
-        <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:block"><div className="overflow-x-auto"><table className="w-full text-sm"><thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-4 py-3 text-left">Host</th><th className="px-4 py-3 text-left">Email</th><th className="px-4 py-3 text-left">KYC Status</th><th className="px-4 py-3 text-left">Bank Status</th><th className="px-4 py-3 text-left">Document</th><th className="px-4 py-3 text-left">Submitted</th><th className="px-4 py-3 text-left">Account Holder</th><th className="px-4 py-3 text-left">Actions</th></tr></thead><tbody className="divide-y divide-slate-100">{items.map((item) => <KycRow key={item.id} item={item} />)}</tbody></table></div></div>
-        <div className="space-y-3 lg:hidden">{items.map((item) => <KycCard key={item.id} item={item} />)}</div>
+        <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:block"><div className="overflow-x-auto"><table className="w-full text-sm"><thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr><th className="px-4 py-3 text-left">Host</th><th className="px-4 py-3 text-left">Email</th><th className="px-4 py-3 text-left">KYC Status</th><th className="px-4 py-3 text-left">Bank Status</th><th className="px-4 py-3 text-left">Document</th><th className="px-4 py-3 text-left">Submitted</th><th className="px-4 py-3 text-left">Account Holder</th><th className="px-4 py-3 text-left">Actions</th></tr></thead><tbody className="divide-y divide-slate-100">{items.map((item) => <KycRow key={item.id} item={item} onSelect={openDetail} />)}</tbody></table></div></div>
+        <div className="space-y-3 lg:hidden">{items.map((item) => <KycCard key={item.id} item={item} onSelect={openDetail} />)}</div>
         <Pagination pagination={pagination} onPageChange={(page) => setPagination((previous) => ({ ...previous, page }))} onLimitChange={(limit) => setPagination((previous) => ({ ...previous, page: 1, limit }))} />
       </>}
+
+      {selectedId && <KycDetailModal id={selectedId} onClose={closeDetail} />}
     </div>
   );
 }
 
-function KycRow({ item }: { item: KycListItem }) {
-  const router = useRouter();
-  return <tr className="cursor-pointer transition-colors hover:bg-slate-50/70" onClick={() => router.push(`/admin/kyc/${encodeURIComponent(item.id)}`)}><td className="px-4 py-3"><div className="flex items-center gap-3"><Avatar className="h-9 w-9"><AvatarImage src={item.host.photo_url ?? undefined} alt={item.host.name ?? 'Host'} /><AvatarFallback className="bg-emerald-100 text-xs font-semibold text-emerald-700">{getInitials(item.host.name)}</AvatarFallback></Avatar><div><p className="font-medium text-slate-900">{item.host.name ?? 'Unknown host'}</p><p className="text-xs text-slate-400">{item.host.username ? `@${item.host.username}` : 'Username unavailable'}</p></div></div></td><td className="px-4 py-3 text-xs text-slate-600">{item.host.email ?? '—'}</td><td className="px-4 py-3"><KycStatusBadge status={item.status} /></td><td className="px-4 py-3"><KycStatusBadge status={item.bank?.verification_status} /></td><td className="px-4 py-3 text-xs text-slate-600">{getDocumentTypeLabel(item.document_type)}</td><td className="px-4 py-3 text-xs text-slate-500">{formatDate(item.created_at)}</td><td className="px-4 py-3 text-xs text-slate-600">{item.bank?.account_holder_name ?? '—'}</td><td className="px-4 py-3"><Link href={`/admin/kyc/${encodeURIComponent(item.id)}`} onClick={(event) => event.stopPropagation()} className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200">View</Link></td></tr>;
+function KycRow({ item, onSelect }: { item: KycListItem; onSelect: (id: string) => void }) {
+  return <tr className="cursor-pointer transition-colors hover:bg-slate-50/70" onClick={() => onSelect(item.id)}><td className="px-4 py-3"><div className="flex items-center gap-3"><Avatar className="h-9 w-9"><AvatarImage src={item.host.photo_url ?? undefined} alt={item.host.name ?? 'Host'} /><AvatarFallback className="bg-emerald-100 text-xs font-semibold text-emerald-700">{getInitials(item.host.name)}</AvatarFallback></Avatar><div><p className="font-medium text-slate-900">{item.host.name ?? 'Unknown host'}</p><p className="text-xs text-slate-400">{item.host.username ? `@${item.host.username}` : 'Username unavailable'}</p></div></div></td><td className="px-4 py-3 text-xs text-slate-600">{item.host.email ?? '—'}</td><td className="px-4 py-3"><KycStatusBadge status={item.status} /></td><td className="px-4 py-3"><KycStatusBadge status={item.bank?.verification_status} /></td><td className="px-4 py-3 text-xs text-slate-600">{getDocumentTypeLabel(item.document_type)}</td><td className="px-4 py-3 text-xs text-slate-500">{formatDate(item.created_at)}</td><td className="px-4 py-3 text-xs text-slate-600">{item.bank?.account_holder_name ?? '—'}</td><td className="px-4 py-3"><button onClick={(event) => { event.stopPropagation(); onSelect(item.id); }} className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200">View</button></td></tr>;
 }
 
-function KycCard({ item }: { item: KycListItem }) {
-  return <Link href={`/admin/kyc/${encodeURIComponent(item.id)}`} className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-center gap-3"><Avatar className="h-10 w-10"><AvatarImage src={item.host.photo_url ?? undefined} alt={item.host.name ?? 'Host'} /><AvatarFallback className="bg-emerald-100 text-xs font-semibold text-emerald-700">{getInitials(item.host.name)}</AvatarFallback></Avatar><div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-900">{item.host.name ?? 'Unknown host'}</p><p className="truncate text-xs text-slate-400">{item.host.username ? `@${item.host.username}` : 'Username unavailable'}</p></div></div><KycStatusBadge status={item.status} /></div><div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 text-xs"><div><p className="text-slate-400">Bank</p><KycStatusBadge status={item.bank?.verification_status} /></div><div><p className="text-slate-400">Submitted</p><p className="mt-1 text-slate-600">{formatDate(item.created_at)}</p></div></div></Link>;
+function KycCard({ item, onSelect }: { item: KycListItem; onSelect: (id: string) => void }) {
+  return <button onClick={() => onSelect(item.id)} className="block w-full rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm"><div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-center gap-3"><Avatar className="h-10 w-10"><AvatarImage src={item.host.photo_url ?? undefined} alt={item.host.name ?? 'Host'} /><AvatarFallback className="bg-emerald-100 text-xs font-semibold text-emerald-700">{getInitials(item.host.name)}</AvatarFallback></Avatar><div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-900">{item.host.name ?? 'Unknown host'}</p><p className="truncate text-xs text-slate-400">{item.host.username ? `@${item.host.username}` : 'Username unavailable'}</p></div></div><KycStatusBadge status={item.status} /></div><div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 text-xs"><div><p className="text-slate-400">Bank</p><KycStatusBadge status={item.bank?.verification_status} /></div><div><p className="text-slate-400">Submitted</p><p className="mt-1 text-slate-600">{formatDate(item.created_at)}</p></div></div></button>;
 }
 
 function EmptyState({ activeFilters, onClear }: { activeFilters: boolean; onClear: () => void }) {

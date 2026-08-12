@@ -88,6 +88,12 @@ export interface KycListParams {
   limit?: number;
 }
 
+export interface ReviewDocumentsRequest {
+  status: 'verified' | 'rejected';
+  name_matches: boolean;
+  rejection_reason?: string;
+}
+
 export interface RejectKycRequest {
   reason: string;
 }

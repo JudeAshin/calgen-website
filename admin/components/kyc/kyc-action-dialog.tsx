@@ -51,8 +51,15 @@ export function KycActionDialog({ id, action, onClose, onSuccess }: KycActionDia
     try {
       if (action === 'verify-bank') await kycService.verifyBank(id);
       if (action === 'reject-bank') await kycService.rejectBank(id, { reason: reason.trim() });
-      if (action === 'verify-kyc') await kycService.verifyKyc(id);
-      if (action === 'reject-kyc') await kycService.rejectKyc(id, { reason: reason.trim() });
+      if (action === 'verify-kyc') await kycService.reviewDocuments(id, {
+        status: 'verified',
+        name_matches: true,
+      });
+      if (action === 'reject-kyc') await kycService.reviewDocuments(id, {
+        status: 'rejected',
+        name_matches: false,
+        rejection_reason: reason,
+      });
       toast({ title: config.success });
       onSuccess();
       onClose();
